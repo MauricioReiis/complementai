@@ -5,7 +5,7 @@ import * as T from "./types";
 const FileInput: React.FC<T.FileInputProps> = ({ onChange, fileName }) => {
   return (
     <div>
-      <S.Label>Anexar arquivo (.pdf ou .docx):</S.Label>
+      <S.Label>Anexar comprovante da atividade (.pdf ou .docx)</S.Label>
       <S.FileInputContainer>
         <S.HiddenInput
           type="file"

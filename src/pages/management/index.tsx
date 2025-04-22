@@ -4,6 +4,7 @@ import Modal from "../../molecules/modal/index.tsx";
 import Trash from "../../assets/icons/trash-icon.png";
 import openIcon from "../../assets/icons/openIcon.png";
 import trashIcon from "../../assets/icons/trash-icon.png";
+import Loading from "../../molecules/loading";
 
 import * as S from "./styles.ts";
 import * as H from "./helpers.ts";
@@ -19,6 +20,7 @@ const Management = () => {
   const [courses, setCourses] = useState<any>();
   const [courseId, setCourseId] = useState<string>();
   const [categories, setCategories] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     window.addEventListener("closeModal", (event: any) => {
@@ -37,32 +39,39 @@ const Management = () => {
   }, []);
 
   const getMeasurer = () => {
+    setIsLoading(true);
     api
       .get(`/user`)
       .then((response) => {
         const admUsers = response.data.filter(
-          (user: any) => user.isAdmin == true
+          (user: any) => user.isAdmin === true
         );
         setMeasurers(admUsers);
+        setIsLoading(false);
       })
-      .catch(() => {});
+      .catch(() => setIsLoading(false));
   };
+
   const getCourses = () => {
+    setIsLoading(true);
     api
       .get(`/user/allCourses`)
       .then((response) => {
         setCourses(response.data);
+        setIsLoading(false); // Definindo o estado como false após a resposta
       })
-      .catch(() => {});
+      .catch(() => setIsLoading(false)); // Caso ocorra um erro, também desativa o loading
   };
 
   const getCategory = () => {
+    setIsLoading(true);
     api
       .get(`/category`)
       .then((response) => {
         setCategories(response.data);
+        setIsLoading(false);
       })
-      .catch(() => {});
+      .catch(() => setIsLoading(false));
   };
 
   const handleModalType = () => {
@@ -96,6 +105,7 @@ const Management = () => {
       });
     setDeleteModal(false);
   };
+
   const handleDeleteCourse = () => {
     api
       .delete(`/user/${userId}/course/${courseId}`)
@@ -123,20 +133,21 @@ const Management = () => {
     setDeleteModal(false);
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <S.Content>
       <S.HeaderOptions>
         <S.TextOptions selected={selected === 0} onClick={() => setSelected(0)}>
-          Gerenciar Avaliador(a)
+          Avaliadores
         </S.TextOptions>
         <S.TextOptions selected={selected === 1} onClick={() => setSelected(1)}>
-          Gerenciar Curso(s)
+          Cursos
         </S.TextOptions>
         <S.TextOptions selected={selected === 2} onClick={() => setSelected(2)}>
-          Gerenciar Categoria da(s) Atividade(s)
+          Categorias de atividades
         </S.TextOptions>
       </S.HeaderOptions>
-
       <S.ButtonAndHoursContainer>
         <CustomButton
           children="Adicionar"
@@ -163,45 +174,52 @@ const Management = () => {
           </thead>
           <tbody>
             {measurers
-              ? measurers.map((measurer: any) => (
-                  <tr key={measurer.id}>
-                    {deleteModal && (
-                      <Modal
-                        handleDelete={() => handleDeleteMeasurer(measurer?.id)}
-                        type="confirmation"
-                      />
-                    )}
-                    {editModal && (
-                      <Modal
-                        type="addMeasurer"
-                        initialMeasurerValue={measurer}
-                      />
-                    )}
-                    <td>{measurer.name}</td>
-                    <td>{measurer.email}</td>
-                    <td>{measurer.registration}</td>
-                    <td>
-                      <img
-                        onClick={() => {
-                          setEditModal(true);
-                        }}
-                        src={openIcon}
-                        alt="OpenIcon"
-                      />
-                    </td>
-                    <td>
-                      <img
-                        onClick={() => {
-                          setDeleteModal(true);
-                        }}
-                        src={trashIcon}
-                        alt="trashIcon"
-                      />
-                    </td>
-                  </tr>
-                ))
+              ? measurers
+                  .filter(
+                    (measurer: any) =>
+                      measurer.name && measurer.email && measurer.registration
+                  )
+                  .map((measurer: any) => (
+                    <tr key={measurer.id}>
+                      {deleteModal && (
+                        <Modal
+                          handleDelete={() =>
+                            handleDeleteMeasurer(measurer?.id)
+                          }
+                          type="confirmation"
+                        />
+                      )}
+                      {editModal && (
+                        <Modal
+                          type="addMeasurer"
+                          initialMeasurerValue={measurer}
+                        />
+                      )}
+                      <td>{measurer.name}</td>
+                      <td>{measurer.email}</td>
+                      <td>{measurer.registration}</td>
+                      <td>
+                        <img
+                          onClick={() => {
+                            setEditModal(true);
+                          }}
+                          src={openIcon}
+                          alt="OpenIcon"
+                        />
+                      </td>
+                      <td>
+                        <img
+                          onClick={() => {
+                            setDeleteModal(true);
+                          }}
+                          src={trashIcon}
+                          alt="trashIcon"
+                        />
+                      </td>
+                    </tr>
+                  ))
               : []}
-            {measurers?.length == 0 && <p>Nenhum avaliador encontrado.</p>}
+            {measurers?.length === 0 && <p>Nenhum avaliador encontrado.</p>}
           </tbody>
         </S.CustomTable>
       )}
@@ -216,33 +234,36 @@ const Management = () => {
           </thead>
           <tbody>
             {courses
-              ? courses.map((course: any) => (
-                  <>
-                    {deleteModal && (
-                      <Modal
-                        handleDelete={() => handleDeleteCourse()}
-                        type="confirmation"
-                      />
-                    )}
-                    <tr>
-                      <td>{course?.courseName}</td>
-                      <td>
-                        <img
-                          onClick={() => {
-                            setCourseId(course?.id), setDeleteModal(true);
-                          }}
-                          src={Trash}
-                          alt="trash-icon"
+              ? courses
+                  .filter((course: any) => course.courseName)
+                  .map((course: any) => (
+                    <>
+                      {deleteModal && (
+                        <Modal
+                          handleDelete={() => handleDeleteCourse()}
+                          type="confirmation"
                         />
-                      </td>
-                    </tr>
-                  </>
-                ))
+                      )}
+                      <tr>
+                        <td>{course?.courseName}</td>
+                        <td>
+                          <img
+                            onClick={() => {
+                              setCourseId(course?.id), setDeleteModal(true);
+                            }}
+                            src={Trash}
+                            alt="trash-icon"
+                          />
+                        </td>
+                      </tr>
+                    </>
+                  ))
               : []}
-            {courses.length === 0 && <p>Nenhum curso encontrado</p>}
+            {courses?.length === 0 && <p>Nenhum curso encontrado</p>}
           </tbody>
         </S.CustomTable>
       )}
+
       {selected === 2 && (
         <S.CustomTable>
           <thead>
@@ -254,36 +275,40 @@ const Management = () => {
           </thead>
           <tbody>
             {categories
-              ? categories.map((category: any) => (
-                  <>
-                    {deleteModal && (
-                      <Modal
-                        handleDelete={() => handleDeleteCategory(category?.id)}
-                        type="confirmation"
-                      />
-                    )}
-                    {editModal && <Modal type="addCategory" />}
-                    <tr>
-                      <td>{category?.category}</td>
-                      <td>
-                        <img
-                          onClick={() => setEditModal(true)}
-                          src={openIcon}
-                          alt="open-icon"
+              ? categories
+                  .filter((category: any) => category.category)
+                  .map((category: any) => (
+                    <>
+                      {deleteModal && (
+                        <Modal
+                          handleDelete={() =>
+                            handleDeleteCategory(category?.id)
+                          }
+                          type="confirmation"
                         />
-                      </td>
-                      <td>
-                        <img
-                          onClick={() => {
-                            setDeleteModal(true);
-                          }}
-                          src={Trash}
-                          alt="trash-icon"
-                        />
-                      </td>
-                    </tr>
-                  </>
-                ))
+                      )}
+                      {editModal && <Modal type="addCategory" />}
+                      <tr>
+                        <td>{category?.category}</td>
+                        <td>
+                          <img
+                            onClick={() => setEditModal(true)}
+                            src={openIcon}
+                            alt="open-icon"
+                          />
+                        </td>
+                        <td>
+                          <img
+                            onClick={() => {
+                              setDeleteModal(true);
+                            }}
+                            src={Trash}
+                            alt="trash-icon"
+                          />
+                        </td>
+                      </tr>
+                    </>
+                  ))
               : []}
           </tbody>
         </S.CustomTable>

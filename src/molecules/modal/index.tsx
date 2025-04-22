@@ -115,55 +115,47 @@ const Modal = ({
   };
 
   const handleSubmitActivity = () => {
-    if (initialActivityValues) {
-      api
-        .put(
-          `/user/${userId}/activities/${initialActivityValues.id}`,
-          activityValues
-        )
-        .then(() => {
-          H.handleAlert("success", "Editado com sucesso!");
-          H.refetchItems("activity");
-        })
-        .catch(() => {
-          H.handleAlert("error", "Não foi possível editar!");
-        });
-    } else {
-      const formData = new FormData();
-      formData.append("approval", activityValues.approval);
-      formData.append("category", activityValues.category);
-      formData.append("workload", activityValues.workload);
-      formData.append("proof", activityValues.proof);
-      formData.append("startDate", activityValues.startDate);
-      formData.append("description", activityValues.description);
-      formData.append("comments", JSON.stringify(activityValues.comments)); // Se for um array
-      if (activityValues.file) {
-        formData.append("file", activityValues.file);
-      }
-      api
-        .post(`/user/${userId}/activities`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          H.handleAlert("success", "Salvo com sucesso!");
-          let activities = JSON.parse(
-            sessionStorage.getItem("activities") || "[]"
-          );
-          let newActivity = {
-            ...activityValues,
-            id: response.data.id,
-            fileName: activityValues.file.name,
-          };
-          activities.push(newActivity);
-          sessionStorage.setItem("activities", JSON.stringify(activities));
-          H.refetchItems("activity");
-        })
-        .catch(() => {
-          H.handleAlert("error", "Não foi possível salvar!");
-        });
+    const formattedStartDate = activityValues.startDate
+      ? new Date(activityValues.startDate).toISOString().slice(0, 10)
+      : "";
+
+    const formData = new FormData();
+    formData.append("approval", activityValues.approval);
+    formData.append("category", activityValues.category);
+    formData.append("workload", activityValues.workload);
+    formData.append("proof", activityValues.proof);
+    formData.append("startDate", formattedStartDate);
+    formData.append("description", activityValues.description);
+    formData.append("comments", JSON.stringify(activityValues.comments));
+
+    if (activityValues.file) {
+      formData.append("file", activityValues.file);
     }
+
+    api
+      .post(`/user/${userId}/activities`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        H.handleAlert("success", "Salvo com sucesso!");
+        let activities = JSON.parse(
+          sessionStorage.getItem("activities") || "[]"
+        );
+        let newActivity = {
+          ...activityValues,
+          id: response.data.id,
+          fileName: activityValues.file.name,
+        };
+        activities.push(newActivity);
+        sessionStorage.setItem("activities", JSON.stringify(activities));
+        H.refetchItems("activity");
+      })
+      .catch(() => {
+        H.handleAlert("error", "Não foi possível salvar!");
+      });
+
     handleClose();
   };
 
@@ -232,7 +224,12 @@ const Modal = ({
   };
 
   const handleComments = async () => {
-    setActivityValues({ ...activityValues, startDate: "2020-02-12" });
+    const formattedStartDate = activityValues.startDate
+      ? new Date(activityValues.startDate).toISOString().slice(0, 10)
+      : "";
+
+    setActivityValues({ ...activityValues, startDate: formattedStartDate });
+
     if (initialActivityValues) {
       await api
         .put(
@@ -262,39 +259,34 @@ const Modal = ({
               onClick={handleClose}
             />
             <S.Title>Cadastrar Atividade Complementar</S.Title>
-
             <Select
               onChange={(e) => handleValues(e.target.value, "category")}
-              label="Categoria da Atividade:"
+              label="Selecione uma categoria da atividade"
               options={categories}
               value={activityValues.category}
             />
-
             <Input
-              label="Carga Horária da Atividade (em horas)"
-              type="number"
-              placeholder="0.0"
+              label="Carga horária da atividade (em horas)"
+              type="text"
+              placeholder="10"
               light={true}
               value={activityValues.workload}
               onChange={(e) => handleValues(e.target.value, "workload")}
             />
-
             <FileInput
               onChange={(e) => handleFileChange(e)}
               fileName={fileName ? fileName : ""}
             />
-
             <Input
-              label="Link do Comprovante (opcional):"
+              label="Link do comprovante (opcional)"
               type="text"
               placeholder="https://example.com.br"
               light={true}
               value={activityValues.proof}
               onChange={(e) => handleValues(e.target.value, "proof")}
             />
-
             <Input
-              label="Data do início da atividade:"
+              label="Data do início da atividade"
               type="date"
               placeholder=""
               light={true}
@@ -305,14 +297,12 @@ const Modal = ({
               }
               onChange={(e) => handleValues(e.target.value, "startDate")}
             />
-
             <TextArea
-              label="Descreva brevemente a atividade:"
+              label="Descreva brevemente a atividade"
               placeholder=""
               value={activityValues.description}
               onChange={(e) => handleValues(e.target.value, "description")}
             />
-
             <S.SaveButton>
               <CustomButton
                 children="Salvar"
@@ -350,7 +340,7 @@ const Modal = ({
             <Input
               label="E-mail: *"
               type="email"
-              placeholder="example@example.com"
+              placeholder="name@example.com"
               light={true}
               value={measurerValues.email}
               onChange={(e) =>
@@ -486,12 +476,10 @@ const Modal = ({
               <S.Title>Deseja excluir essa atividade?</S.Title>
               <S.SideBarIcon src={AlertIcon} alt="close-modal-icon" />
             </div>
-
             <p>
               Esta ação é irreversível. Se continuar, não será possível desfazer
               essa operação.
             </p>
-
             <S.ButtonsOption>
               <CustomButton
                 children="Fechar"

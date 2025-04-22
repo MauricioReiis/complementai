@@ -5,27 +5,56 @@ import Input from "../../../atoms/Input";
 import loginIcon from "../../../assets/icons/logoutIcon.svg";
 import * as S from "./styles";
 import api from "../../../services/api";
+import Loading from "../../../molecules/loading";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [login, setLogin] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    api
-      .post("/auth/login", login)
-      .then((response) => {
-        sessionStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
-        window.location.reload();
-      })
-      .catch(() => {});
+    setIsLoading(true);
+
+    try {
+      const { data } = await api.post("/auth/login", login);
+      sessionStorage.setItem("token", data.token);
+
+      const { data: user } = await api.get("/user/info");
+      sessionStorage.setItem("userId", user.id);
+
+      const { permissions } = user;
+
+      let redirectPath = "/dashboard";
+
+      switch (true) {
+        case permissions.includes("activities"):
+          redirectPath = "/activities";
+          break;
+        case permissions.includes("evaluation"):
+          redirectPath = "/evaluation";
+          break;
+        case permissions.includes("management"):
+          redirectPath = "/management";
+          break;
+        default:
+          redirectPath = "/dashboard";
+          break;
+      }
+
+      navigate(redirectPath);
+      window.location.reload();
+    } catch {
+      setIsLoading(false);
+    }
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <S.Form onSubmit={handleSubmit} isMeasurer={false}>
       <S.Title>
         <img src={loginIcon} alt="loginIcon" />
@@ -35,7 +64,7 @@ const Login = () => {
         <Input
           label="Email"
           type="email"
-          placeholder="exemple@example.com"
+          placeholder="name@example.com"
           onChange={(event) =>
             setLogin({ ...login, email: event.target.value })
           }
@@ -43,7 +72,7 @@ const Login = () => {
         <Input
           label="Senha"
           type="password"
-          placeholder="Senha"
+          placeholder="senha"
           onChange={(event) =>
             setLogin({ ...login, password: event.target.value })
           }
@@ -52,7 +81,6 @@ const Login = () => {
       <S.ButtonsWrapper>
         <CustomButton
           children="Logar"
-          onClick={() => handleSubmit}
           color="#2D60FF"
           hasborder={false}
           type="submit"

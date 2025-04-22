@@ -65,7 +65,21 @@ export const SendButton = styled.div`
 
   @media screen and (min-width: 600px) {
     position: absolute;
-    bottom: 70px;
-    right: 70px;
+    bottom: 4.375rem;
+    right: 4.375rem;
   }
 `;
+
+export const Wrappper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 50vh;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+
+  img{
+    width: 15.625rem;
+  }
+`

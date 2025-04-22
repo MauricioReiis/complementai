@@ -45,8 +45,6 @@ const Register = () => {
       .catch(() => {});
   }, []);
 
-  console.log(courses);
-
   const handleSubmit = (event: any) => {
     event.preventDefault();
     if (form.password === form.confirmPassword) {
@@ -72,24 +70,23 @@ const Register = () => {
         <img src={userIcon} alt="userIcon" />
         Criar conta
       </S.Title>
-
       <S.InputsWrapper>
         <Input
           label="Nome"
           type="text"
-          placeholder="Nome"
+          placeholder="Digite seu nome"
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
         <Input
           label="Email"
           type="email"
-          placeholder="exemple@example.com"
+          placeholder="name@example.com"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <Input
           label="Matrícula"
           type="text"
-          placeholder="Matrícula"
+          placeholder="informe o código da sua matrícula"
           onChange={(e) => setForm({ ...form, registration: e.target.value })}
         />
         <Select
@@ -102,19 +99,18 @@ const Register = () => {
         <Input
           label="Senha"
           type="password"
-          placeholder="Senha"
+          placeholder="escolha uma senha"
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
         <Input
           label="Confirmar senha"
           type="password"
-          placeholder="Confirmar senha"
+          placeholder="digite novamente sua senha"
           onChange={(e) =>
             setForm({ ...form, confirmPassword: e.target.value })
           }
         />
       </S.InputsWrapper>
-
       <S.ButtonsWrapper>
         <CustomButton
           children="Salvar"

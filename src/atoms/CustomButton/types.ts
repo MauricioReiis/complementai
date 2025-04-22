@@ -7,6 +7,7 @@ export interface CustomButtonProps {
     onClick?: () => void;
     hasIcon?: boolean;
     iconName?: string;
-    height?: string
+    height?: string;
+    disabled?: boolean;
     type?: "button" | "submit" | "reset"
 }

@@ -119,15 +119,16 @@ export const CheckboxContainer = styled.div`
 `;
 
 export const Checkbox = styled.input.attrs({ type: "checkbox" })`
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   cursor: pointer;
 `;
 
 export const ButtonsSection = styled.div`
   margin-top: 1.5rem;
-  align-self: flex-end;
-  gap: 24px;
-  width: 312px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 6.25rem 1fr 6.25rem 6.25rem;
+  gap: 1.5rem;
+  align-items: center;
 `;
+

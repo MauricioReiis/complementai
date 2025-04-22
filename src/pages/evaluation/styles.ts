@@ -34,5 +34,11 @@ export const InputsFilter = styled.div`
 `;
 
 export const SearchButton = styled.div`
-  width: 110px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+
+  div{
+    width: 8%;
+  }
 `;

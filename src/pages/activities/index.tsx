@@ -4,16 +4,24 @@ import { ActivitiesTable } from "../../molecules/ActivitiesTable/index.tsx";
 import Modal from "../../molecules/modal/index.tsx";
 import * as S from "./styles.ts";
 import * as T from "./types.ts";
+import Loading from "../../molecules/loading/index.tsx";
 
 const Activities = () => {
   const [selected, setSelected] = useState(true);
   const [modal, setModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [sumActivities, setSumActivities] = useState<T.Activity[]>();
 
-  const getActivities = () => {
-    const activitiesInSession = sessionStorage.getItem("activities");
-    if (activitiesInSession) {
-      setSumActivities(JSON.parse(activitiesInSession));
+  const getActivities = async () => {
+    setIsLoading(true);
+
+    try {
+      const activitiesInSession = sessionStorage.getItem("activities");
+      if (activitiesInSession) {
+        setSumActivities(JSON.parse(activitiesInSession));
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,14 +47,16 @@ const Activities = () => {
     }, 0);
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <S.Content>
       <S.HeaderOptions>
         <S.TextOptions selected={selected} onClick={() => setSelected(true)}>
-          Cadastrar atividade(s)
+          Cadastro
         </S.TextOptions>
         <S.TextOptions selected={!selected} onClick={() => setSelected(false)}>
-          Atividade(s) pendente(s)
+          Status atividades
         </S.TextOptions>
       </S.HeaderOptions>
       {selected && (

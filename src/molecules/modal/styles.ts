@@ -27,6 +27,10 @@ export const Container = styled.section`
   background-color: white;
   opacity: 1;
   position: absolute;
+
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
   
   @media screen and (max-width: 600px) {
     top: 0;

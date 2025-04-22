@@ -9,7 +9,6 @@ export const AsideContainer = styled.aside`
   height: 100%;
   width: 150px;
   z-index: 1;
-  justify-content: space-between;
   position: fixed;
   box-shadow: 0px 4px 4px 0px #00000040;
 
@@ -24,8 +23,6 @@ export const ItemsBox = styled.div`
   flex-direction: column;
   width: 100%;
   margin-top: 0.9375rem;
-
-  
 `;
 
 export const Link = styled.p<{ selected: boolean }>`
@@ -37,6 +34,7 @@ export const Link = styled.p<{ selected: boolean }>`
   display: flex;
   gap: 1.625rem;
   cursor: pointer;
+  font-weight: bold;
 
   &:hover{
     font-weight: bold;
@@ -63,11 +61,35 @@ export const Link = styled.p<{ selected: boolean }>`
       : "invert(79%) sepia(3%) saturate(0%) hue-rotate(45deg) brightness(94%) contrast(85%)"
     };
   }
+
 `;
 
 export const LogoutBox = styled.div`
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 0.5625rem;
   width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+
+  span{
+    font-weight: bold;
+  }
+
+
 `;
+
+export const TextBox = styled.div`
+  width: 100%;
+  padding-bottom: 2.1875rem;
+
+  p{
+    color: #b1b1b1;
+    font-size: 0.75rem;
+    font-style: italic;
+    text-align: center;
+
+  }
+
+`

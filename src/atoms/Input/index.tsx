@@ -18,6 +18,7 @@ const Input = ({
         onChange={onChange}
         light={light}
         value={value}
+        autoComplete="new-password"
       />
     </S.InputContainer>
   );

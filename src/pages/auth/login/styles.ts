@@ -27,6 +27,11 @@ export const Title = styled.h1`
   align-items: center;
   gap: 10px;
 
+  img{
+    filter: brightness(0);
+
+  }
+
   @media screen and (min-width: 1024px) {
     font-size: 2rem;
   }

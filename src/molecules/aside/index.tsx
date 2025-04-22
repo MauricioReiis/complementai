@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import * as S from "./styles";
 import * as H from "./helpers";
 import api from "../../services/api";
+import Loading from "../loading";
 
 const Aside = () => {
   const [filteredPages, setFilteredPages] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
   const pages = [
     { title: "Página Inicial", url: "/dashboard", icon: "dashboard" },
     { title: "Avaliações", url: "/evaluation", icon: "evaluation" },
@@ -35,12 +37,18 @@ const Aside = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    navigate("/login");
-    window.location.reload();
+    setIsLoading(true);
+
+    setTimeout(() => {
+      sessionStorage.clear();
+      navigate("/login");
+      window.location.reload();
+    }, 3000);
   };
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <S.AsideContainer>
       <S.ItemsBox>
         {filteredPages?.map((item: any) => (
@@ -54,12 +62,16 @@ const Aside = () => {
           </S.Link>
         ))}
       </S.ItemsBox>
-
       <S.LogoutBox>
         <S.Link selected={false} onClick={handleLogout}>
           <img src={H.getIcon("logout")} alt="aside-icon" />
-          Sair
+          <span>Sair</span>
         </S.Link>
+        <S.TextBox>
+          <p>Criado e Desenvolvido por</p>
+          <p>Maurício Reis ®</p>
+          <p>v1.0.0</p>
+        </S.TextBox>
       </S.LogoutBox>
     </S.AsideContainer>
   );

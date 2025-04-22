@@ -2,6 +2,7 @@ import openIcon from "../../assets/icons/openActivityIcon.svg";
 import { CustomButton } from "../../atoms/CustomButton";
 import { useNavigate } from "react-router-dom";
 import trashIcon from "../../assets/icons/trash-icon.png";
+import robot from "../../assets/imgs/sadRobot.png";
 
 import * as S from "./styles";
 import * as T from "./types";
@@ -134,7 +135,12 @@ export const ActivitiesTable = ({
                     </td>
                   </S.TableRow>
                 ))}
-              {activities.length === 0 && <p>Nenhuma atividade cadastrada.</p>}
+              {activities.length === 0 && (
+                <S.Wrappper>
+                  <p>Nenhuma atividade cadastrada</p>
+                  <img src={robot} alt="Imagem de robô" />
+                </S.Wrappper>
+              )}
             </S.Table>
 
             <S.SendButton>
@@ -204,7 +210,12 @@ export const ActivitiesTable = ({
                     </S.TableRow>
                   </tbody>
                 ))}
-              {activities.length === 0 && <p>Nenhuma atividade cadastrada.</p>}
+              {activities.length === 0 && (
+                <S.Wrappper>
+                  <p>Nenhuma atividade cadastrada</p>
+                  <img src={robot} alt="Imagem de robô" />
+                </S.Wrappper>
+              )}
             </S.Table>
           </S.TableWrapper>
         </>
@@ -223,39 +234,42 @@ export const ActivitiesTable = ({
               </tr>
             </S.TableHeader>
             {evalueateActivities
-              ? evalueateActivities.map((user: any) => (
-                  <S.TableRow key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.registration}</td>
-                    <td>{user?.courses?.[0]?.courseName || "Não informado"}</td>
-                    <S.Status
-                      status={
-                        user.activities.some(
+              ? evalueateActivities.map((user: any) => {
+                  console.log(user);
+                  return (
+                    <S.TableRow key={user.id}>
+                      <td>{user.name}</td>
+                      <td>{user.registration}</td>
+                      <td>{user?.courses?.[0] || "Não informado"}</td>
+                      <S.Status
+                        status={
+                          user.activities.some(
+                            (activity: any) => activity.approval === "pending"
+                          )
+                            ? "pending"
+                            : "finished"
+                        }
+                      >
+                        {user.activities.some(
                           (activity: any) => activity.approval === "pending"
                         )
-                          ? "pending"
-                          : "finished"
-                      }
-                    >
-                      {user.activities.some(
-                        (activity: any) => activity.approval === "pending"
-                      )
-                        ? "Pendente"
-                        : "Finalizado"}
-                    </S.Status>
-                    <td>
-                      <img
-                        onClick={() => {
-                          navigate("/evaluation/view", {
-                            state: { studentId: user.id },
-                          });
-                        }}
-                        src={openIcon}
-                        alt="openIcon"
-                      />
-                    </td>
-                  </S.TableRow>
-                ))
+                          ? "Pendente"
+                          : "Finalizado"}
+                      </S.Status>
+                      <td>
+                        <img
+                          onClick={() => {
+                            navigate("/evaluation/view", {
+                              state: { studentId: user.id },
+                            });
+                          }}
+                          src={openIcon}
+                          alt="openIcon"
+                        />
+                      </td>
+                    </S.TableRow>
+                  );
+                })
               : []}
           </S.Table>
         </>
