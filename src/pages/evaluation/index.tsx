@@ -155,7 +155,10 @@ const Evaluation = () => {
       {isLoading ? (
         <p>Carregando dados...</p>
       ) : (
-        <ActivitiesTable type="evalueateActivity" evalueateActivities={users} />
+        <ActivitiesTable
+          type="evalueateActivity"
+          evalueateActivities={filterUsers()}
+        />
       )}
     </S.Content>
   );
